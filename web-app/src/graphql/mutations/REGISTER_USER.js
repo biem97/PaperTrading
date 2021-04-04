@@ -1,11 +1,13 @@
 import { gql } from "@apollo/client";
 
+// Fragments
+import UserInfoFragment from "../fragments/UserInfoFragment";
+
 const REGISTER_USER = gql`
+  ${UserInfoFragment}
   mutation REGISTER_USER($input: RegisterInput!) {
     registerUser(input: $input) {
-      name
-      email
-      message
+      ...UserInfoFragment
     }
   }
 `;

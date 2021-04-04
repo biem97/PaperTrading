@@ -8,14 +8,22 @@ import GET_RATES from "../graphql/queries/GET_RATES";
 import SingleCard from "./SingleCard";
 
 const MultipleCards = () => {
-  const { loading, error, data } = useQuery(GET_RATES);
+  const { loading, error, data } = useQuery(GET_RATES, {
+    fetchPolicy: "network-only",
+  });
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
 
-  return data.rates.map(({ currency, rate }) => (
-    <SingleCard currency={currency} rate={rate} key={currency} />
-  ));
+  return (
+    <>
+      <div>
+        {data.rates.map(({ currency, rate }) => (
+          <SingleCard currency={currency} rate={rate} key={currency} />
+        ))}
+      </div>
+    </>
+  );
 };
 
 export default MultipleCards;

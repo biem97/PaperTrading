@@ -1,16 +1,25 @@
+// Queries
 const rates = require("./rates");
 const ExchangeRates = require("./ExchangeRates");
+const getUser = require("./getUser");
+const ping = require("./ping");
+
+// Mutations
 const registerUser = require("./registerUser");
 const loginUser = require("./loginUser");
+const logoutUser = require("./logoutUser");
 
 // Combine all resolvers
 module.exports = {
   Query: {
-    rates: rates,
+    rates,
+    getUser,
+    ping,
   },
   Mutation: {
-    registerUser: registerUser,
-    loginUser: loginUser,
+    registerUser,
+    loginUser,
+    logoutUser,
   },
   ExchangeRate: ExchangeRates,
 };

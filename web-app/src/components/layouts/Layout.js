@@ -1,19 +1,25 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Navbar from "../navbars/Navbar";
 
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles, Container, Box } from "@material-ui/core";
+
+// Components
+import Navbar from "../navbars/Navbar";
+import Footer from "./Footer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "block flow",
-    height: "100%",
+    display: "flex",
   },
-  mainContent: {
-    marginTop: theme.mixins.toolbar.minHeight,
-    objectFit: "contain",
-    height: "100%",
+  appBarSpacer: theme.mixins.toolbar,
+  content: {
     flexGrow: 1,
+    height: "100vh",
+    overflow: "auto",
+  },
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
   },
 }));
 
@@ -23,7 +29,15 @@ const Layout = ({ children }) => {
   return (
     <div className={classes.root}>
       <Navbar />
-      <main className={classes.mainContent}>{children}</main>
+      <main className={classes.content}>
+        <div className={classes.appBarSpacer} />
+        <Container maxWidth="lg" className={classes.container}>
+          {children}
+          <Box pt={4}>
+            <Footer />
+          </Box>
+        </Container>
+      </main>
     </div>
   );
 };

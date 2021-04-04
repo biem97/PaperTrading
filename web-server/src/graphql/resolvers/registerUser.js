@@ -1,7 +1,12 @@
 const { UserInputError } = require("apollo-server-express"); // Error throw
 const yup = require("yup"); // Schema Validation
-const User = require("../../models/User"); // User Schema
 const bcrypt = require("bcryptjs");
+
+// Chalk
+const chalk = require("chalk");
+const User = require("../../database/models/User");
+// User Schema
+const { log } = console;
 
 const argsSchema = yup
   .object()
@@ -52,10 +57,13 @@ module.exports = async (_parent, args, _context, _info) => {
         name,
         email,
         password: hash,
+        date: Date.now(),
       });
       userInfo
         .save()
-        .then((user) => console.log(`User: ${user.email} is registered!!!`))
+        .then((value) =>
+          log(chalk.blue(`User: ${value.email} is registered!!!`))
+        )
         .catch((error) => {
           throw new Error(error);
         });
@@ -65,6 +73,5 @@ module.exports = async (_parent, args, _context, _info) => {
   return {
     name,
     email,
-    message: "Successfully registered! Welcome to Paper Trading <3",
   };
 };

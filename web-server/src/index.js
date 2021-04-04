@@ -1,6 +1,12 @@
 // Initial express app server and PORT
 const express = require("express");
+
 const app = express();
+
+// Chalk
+const chalk = require("chalk");
+
+const { log } = console;
 
 // Middleware
 const cors = require("cors");
@@ -11,11 +17,11 @@ const passportJWT = require("./middlewares/passportJWT");
 // Apollo Server
 const apolloServer = require("./graphql");
 
-// mongoose
-const mongoose = require("mongoose");
+// MongoDB Atlas
+const mongoAtlas = require("./database");
 
 // Configs
-const { serverConfigs } = require("./configs/serverConfigs");
+const serverConfigs = require("./configs/serverConfigs");
 
 // Apply middleware for express
 app.use(cors());
@@ -30,32 +36,10 @@ app.use("/graphql", passportJWT.middleware);
 
 apolloServer.applyMiddleware({ app, cors: true });
 
-app.get("/test", (_req, res, next) => {
-  res.status(200).send("Hello");
-});
+app.listen(serverConfigs.PORT, () => {
+  // Connect to MongoDB Atlas Database
+  mongoAtlas();
 
-// Serve static assets if in production
-if (process.env.NODE_ENV === "production") {
-  // Set static folder
-  app.use(express.static("client/build"));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "web-app", "build", "index.html"));
-  });
-}
-
-app.listen(serverConfigs.PORT, async () => {
-  // MongoDB Atlas Database connect
-  await mongoose
-    .connect(serverConfigs.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    .then(() => console.log("MongoDB successfully connected"))
-    .catch((err) =>
-      console.error(`Can't connect to the MongoDB Atlas: ${err}`)
-    );
-
-  console.log(`Server is starting up`);
-  console.log(`Listening on port ${serverConfigs.PORT}`);
+  log(chalk.blue("Server is starting up"));
+  log(chalk.green(`Listening on port ${serverConfigs.PORT}`));
 });

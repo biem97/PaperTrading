@@ -12,34 +12,33 @@ module.exports = gql`
     name: String
   }
 
-  type User {
+  type UserInfo {
     name: String!
     email: String!
   }
 
-  type RegisterUser {
-    name: String!
-    email: String!
-    message: String!
-  }
-
-  type LoginUser {
-    name: String!
-    email: String!
-    jwt_token: String!
+  type JwtToken {
+    jwtToken: String!
   }
 
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each.
   type Query {
-    users: [User]
     rates(currency: String!): [ExchangeRate]
+    getUser: JwtToken!
+    ping: String!
   }
 
+  # The "Mutation" type is special: it lists all of the available mutations that
+  # clients can execute, along with the return type for each.
   type Mutation {
-    registerUser(input: RegisterInput!): RegisterUser!
-    loginUser(input: LoginInput!): LoginUser!
+    registerUser(input: RegisterInput!): UserInfo!
+    loginUser(input: LoginInput!): JwtToken!
+    logoutUser: UserInfo!
   }
+
+  # The "Subscription" type is special: it lists all of the available subscriptions that
+  # clients can execute, along with the return type for each.
 
   ### Inputs start here
   input RegisterInput {

@@ -3,24 +3,25 @@
 // TODO: SEND REQUEST WITH AUTHORIZATION HEADER FROM CLIENT
 // ? HOW TO SEPARATE SECRET TOKEN WITH JWT TOKEN IN AUTHORIZATION HEADER
 
+// Passport
 const { ExtractJwt, Strategy } = require("passport-jwt");
 const passport = require("passport");
-// Secrets
-const keys = require("../../.env/keys");
-const User = require("../models/User");
-const jwt = require("jsonwebtoken");
+
+// Server configs
+const { JWT_ISSUER, SECRET_KEY } = require("../configs/serverConfigs");
+const User = require("../database/models/User");
 
 const jwtOptions = {
-  issuer: "Son Nguyen",
-  secretOrKey: keys.secretOrKey,
+  issuer: JWT_ISSUER,
+  secretOrKey: SECRET_KEY,
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   passReqToCallback: true,
 };
 
 // ! CURRENT FRONT END DON'T HAVE `AUTHORIZATION` HEADER SO THIS FUNCTION WON'T BE CALLED
 const verifyCallback = async (_req, payload, done) => {
+  // verify the JWT is sent with the valid jwtOptions -> payload -> user -> getAuthenticationCallback
   try {
-    // BAH - This is what is actually getting stored in the context as the currentUser
     const user = await User.findById(payload._id);
     return user ? done(null, user) : done(null, null);
   } catch (err) {
@@ -34,12 +35,14 @@ const jwtStrategy = new Strategy(jwtOptions, verifyCallback);
 passport.use(jwtStrategy);
 passport.initialize();
 
-// returns a function(err,user,info)
-// doing it this way to aid unit testing
-const getAuthenticationCallback = (req, res, next) => (err, user) => {
-  // if (!!req.cookies && !!req.cookies.secretToken) {
-  //   req.secretToken = req.cookies.secretToken;
-  // }
+const getAuthenticationCallback = (req, res, next) => (_err, user) => {
+  // set the currentUser
+  if (user) {
+    req.currentUser = user;
+  }
+  if (!!req.cookies && !!req.cookies.secretToken) {
+    req.secretToken = req.cookies.secretToken;
+  }
   next();
 };
 
